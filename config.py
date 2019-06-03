@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*-
-testcase = {
+test_module = {
     "testcase": ["1-2"],
 
 }
