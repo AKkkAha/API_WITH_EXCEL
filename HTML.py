@@ -4,17 +4,16 @@ import sys
 import re
 import collections
 import shutil
-sys.path.append('log')
 from os.path import join
 import time
 from pyh import *
 import cPickle as pickle
 import config
 from platform import system
-import sys
+# from  ExcelAccessor import *
 reload(sys)
 sys.setdefaultencoding('utf8')
-#from  ExcelAccessor import *
+sys.path.append('log')
 RECORD_TITLE = '测试'
 
 class Html:
@@ -166,10 +165,12 @@ class Html:
                         postflag = 1
                     elif "recv :" in line:
                         recvmsg = line.strip('\r\n').split('- INFO -')[-1]
+                    elif "recv_headers :" in line:
+                        recv_headers = line.strip('\r\n').split('- INFO -')[-1]
                     elif "DEBUG" in line and postflag == 1:
                         conc = line.strip('\r\n').split("- DEBUG -")[-1]
                         result, casename = tuple(conc.split()[1:3])
-                        logdetail = postmsg + '<p>' + recvmsg + '<p>' + conc
+                        logdetail = postmsg + '<p>' + recvmsg + '<p>' + recv_headers + '<p>' + conc
                         entitylist = [round[-1], result, logdetail]
                         entitydict[casename + round[-1]] = entitylist
                         casedict[casemodule] = entitydict

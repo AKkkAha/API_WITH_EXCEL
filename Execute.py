@@ -79,7 +79,7 @@ def api_run(table, case_num, logr, logl):
     if var_list:
         for i in range(len(var_list)):
             var_list[i] = var_list[i].strip("${").strip("}")
-        if caseinfo[titledict["前置条件"]]:
+        if caseinfo[titledict["前置条件"]]:  # 表格内多个前置条件用空格隔开
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))
                 if pre_case in pre_case_list:
@@ -107,9 +107,9 @@ def api_run(table, case_num, logr, logl):
                     pre_recv = json.load(table, pre_case, logr, logl)
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]] == "GET":
-        recv_msg = http_test.get_msg(url, msg_json)
+        recv_msg, recv_headers = http_test.get_msg(url, msg_json)
     else:
-        recv_msg = http_test.post_msg(url, msg_json)
+        recv_msg, recv_headers = http_test.post_msg(url, msg_json)
     pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
@@ -154,10 +154,8 @@ def check_result(recv_msg, caseinfo):
     return None
 
 
-
-
 if __name__ == "__main__":
-    exec_test(5)
+    exec_test()
     obj = Html(logger.now + "result")
     loglist = []
     for module in config.test_module:
