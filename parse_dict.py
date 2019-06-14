@@ -2,27 +2,29 @@
 
 
 def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
+    value = "00"
     for key in temp_dict.keys():
         if key == target:
-            return "['" + str(target) + "']"
+            value = "['" + str(target) + "']"
         else:
             if type(temp_dict[key]) is list:
                 temp_dict[key] = temp_dict[key][0]
             if type(temp_dict[key]) is dict:
-                return "['" + str(key) + "']" + search_dict(target, temp_dict[key])
-    return False
+                value = "['" + str(key) + "']" + search_dict(target, temp_dict[key])
+    return value
 
 
 def find_from_dict(target, temp_dict):   # 返回target在temp_dict中的值
+    value = "00"
     for key in temp_dict.keys():
         if key == target:
-            return temp_dict[key]
+            value = temp_dict[key]
         else:
             if type(temp_dict[key]) is list:
                 temp_dict[key] = temp_dict[key][0]
             if type(temp_dict[key]) is dict:
-                return find_from_dict(target, temp_dict[key])
-    return False
+                value = find_from_dict(target, temp_dict[key])
+    return value
 
 
 def compare_dict(dict1, dict2):
@@ -44,3 +46,7 @@ def compare_dict(dict1, dict2):
 # print "mydict" + path + "=24"
 # exec("mydict" + path + "=24")
 # print mydict
+# target = "xx"
+# test_dict = {'a': 1, 'b': 2, 'c': {'d': 4, 'e': 5}, 'f': {'g': 6, 'xx': 7, 'h': 8}}
+# value = find_from_dict(target, test_dict)
+# print value

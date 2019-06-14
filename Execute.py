@@ -19,6 +19,7 @@ pre_recv = None
 pre_var = config.custom_var
 titledict = {}
 
+
 def exec_test(times=1):
     global pre_case_list, pre_recv, pre_var, titledict
     filename = glob.glob(os.getcwd() + os.sep + '*.xls')[0]
@@ -32,7 +33,7 @@ def exec_test(times=1):
             logr = logger.rstcls.initial(testsheet + "_result")
             logl = logger.logcls(testsheet)
             logl.log("Case module : " + testsheet)
-            logl.log("Test Round : Round " + str(num+1))
+            logl.log("Test Round : Round " + str(num + 1))
             logr.log("Case module : " + testsheet)
             logr.log("Test Round : Round " + str(num + 1))
             table = wb.sheet_by_name(testsheet)
@@ -50,7 +51,6 @@ def get_title_index(title_list):
     for title in title_list:
         titledict[title.encode("utf-8")] = title_list.index(title)
     return titledict
-
 
 
 def get_case(sheet_list, table):
@@ -79,7 +79,7 @@ def api_run(table, case_num, logr, logl):
     if var_list:
         for i in range(len(var_list)):
             var_list[i] = var_list[i].strip("${").strip("}")
-        if caseinfo[titledict["前置条件"]]:  # 表格内多个前置条件用空格隔开
+        if caseinfo[titledict["前置条件"]]:       # 表格内多个前置条件用空格隔开
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))
                 if pre_case in pre_case_list:
@@ -106,7 +106,7 @@ def api_run(table, case_num, logr, logl):
                     pre_case_list.append(pre_case)
                     pre_recv = json.load(table, pre_case, logr, logl)
     http_test = HTTP_API.HTTP_Cls(table.name)
-    if caseinfo[titledict["请求方法"]] == "GET":
+    if caseinfo[titledict["请求方法"]].upper() == "GET":
         recv_msg, recv_headers = http_test.get_msg(url, msg_json)
     else:
         recv_msg, recv_headers = http_test.post_msg(url, msg_json)
@@ -150,7 +150,7 @@ def check_result(recv_msg, caseinfo):
         result_dict = json.loads(caseinfo[titledict["EXPECTED_RESULTS"]])
         miss_list = compare_dict(result_dict, recv_msg)
         if miss_list:
-            return miss_list
+            return miss_list      # 返回缺少的值
     return None
 
 
