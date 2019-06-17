@@ -75,10 +75,13 @@ def api_run(table, case_num, logr, logl):
     url = caseinfo[titledict["域名IP及端口"]] + caseinfo[titledict["URL_ADDR"]]
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
     msg_json = json.loads(msg)
-    var_list = re.findall(r"\${.*?}", msg)
+    var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
+    key_list = []
+    value_list = []
     if var_list:
-        for i in range(len(var_list)):
-            var_list[i] = var_list[i].strip("${").strip("}")
+        for item in var_list:
+            value_list.append(item.split("${")[-1].strip("}"))
+            key_list.append(item.split("${")[0].strip('"'))
         if caseinfo[titledict["前置条件"]]:       # 表格内多个前置条件用空格隔开
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))
@@ -91,11 +94,12 @@ def api_run(table, case_num, logr, logl):
                     if pre_condition not in pre_var.keys():
                         # pre_var[pre_condition] = Check(pre_condition, msg_json)
                         pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
-        for var in var_list:
+        for var in value_list:
+            var_key = key_list[value_list.index(var)]
             if var == "timestamp":
-                exec("msg_json" + search_dict(var, msg_json) + "=" + time.time())
+                exec("msg_json" + search_dict(var_key, msg_json) + "=" + time.time())
             else:
-                exec("msg_json" + search_dict(var, msg_json) + "='" + str(pre_var[var]) + "'")
+                exec("msg_json" + search_dict(var_key, msg_json) + "='" + str(pre_var[var]) + "'")
     else:
         if caseinfo[titledict["前置条件"]]:
             for pre_case in caseinfo[titledict["前置条件"]].split():
