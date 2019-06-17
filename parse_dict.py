@@ -3,10 +3,10 @@
 
 def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
     value = "00"
-    for key in temp_dict.keys():
-        if key == target:
-            value = "['" + str(target) + "']"
-        else:
+    if target in temp_dict.keys():
+        value = "['" + str(target) + "']"
+    else:
+        for key in temp_dict.keys():
             if type(temp_dict[key]) is list:
                 temp_dict[key] = temp_dict[key][0]
             if type(temp_dict[key]) is dict:
@@ -16,10 +16,10 @@ def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
 
 def find_from_dict(target, temp_dict):   # 返回target在temp_dict中的值
     value = "00"
-    for key in temp_dict.keys():
-        if key == target:
-            value = temp_dict[key]
-        else:
+    if target in temp_dict.keys():
+        value = temp_dict[target]
+    else:
+        for key in temp_dict.keys():
             if type(temp_dict[key]) is list:
                 temp_dict[key] = temp_dict[key][0]
             if type(temp_dict[key]) is dict:
