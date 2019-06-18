@@ -2,7 +2,7 @@
 
 
 def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
-    value = "00"
+    value = ""
     if target in temp_dict.keys():
         value = "['" + str(target) + "']"
     else:
@@ -15,7 +15,7 @@ def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
 
 
 def find_from_dict(target, temp_dict):   # 返回target在temp_dict中的值
-    value = "00"
+    value = ""
     if target in temp_dict.keys():
         value = temp_dict[target]
     else:

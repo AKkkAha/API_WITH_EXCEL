@@ -22,7 +22,7 @@ titledict = {}
 
 def exec_test(times=1):
     global pre_case_list, pre_recv, pre_var, titledict
-    filename = glob.glob(os.getcwd() + os.sep + '*.xls')[0]
+    filename = glob.glob(os.getcwd() + os.sep + '*.xls*')[0]
     wb = xlrd.open_workbook(filename)
     for num in range(times):
         for testsheet in config.test_module.keys():
@@ -74,14 +74,17 @@ def api_run(table, case_num, logr, logl):
     caseinfo = table.row_values(case_num)
     url = caseinfo[titledict["域名IP及端口"]] + caseinfo[titledict["URL_ADDR"]]
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
-    msg_json = json.loads(msg)
+    try:
+        msg_json = json.loads(msg)
+    except:
+        msg_json = None
     var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
     key_list = []
     value_list = []
     if var_list:
         for item in var_list:
-            value_list.append(item.split("${")[-1].strip("}"))
-            key_list.append(item.split("${")[0].strip('"'))
+            value_list.append(item.split("${")[-1].strip('}"'))
+            key_list.append(item.split("${")[0].strip('"').strip().strip(':').strip('"'))
         if caseinfo[titledict["前置条件"]]:       # 表格内多个前置条件用空格隔开
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))
@@ -95,6 +98,7 @@ def api_run(table, case_num, logr, logl):
                         # pre_var[pre_condition] = Check(pre_condition, msg_json)
                         pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
         for var in value_list:
+            print var_list, key_list, value_list
             var_key = key_list[value_list.index(var)]
             if var == "timestamp":
                 exec("msg_json" + search_dict(var_key, msg_json) + "=" + time.time())
@@ -115,7 +119,10 @@ def api_run(table, case_num, logr, logl):
     else:
         recv_msg, recv_headers = http_test.post_msg(url, msg_json)
     pre_case_list.append(int(case_num))
-    check_flag = check_result(recv_msg, caseinfo)
+    try:
+        check_flag = check_result(recv_msg, caseinfo)
+    except Exception as e:
+        check_flag = e
     if check_flag is None:
         print "用例        PASS        %s" % caseinfo[titledict["用例标题"]]
         logr.log("用例        PASS        %s  %s" % (table.name, caseinfo[titledict["用例标题"]]))
@@ -135,7 +142,7 @@ def api_run(table, case_num, logr, logl):
     print pre_var
     print "pre_case_list"
     print pre_case_list
-
+    pre_recv = recv_msg
     return recv_msg
 
 
