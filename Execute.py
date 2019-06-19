@@ -106,7 +106,7 @@ def api_run(table, case_num, logr, logl):
                     exec("msg_loads" + search_dict(var_key, msg_loads) + "='" + str(pre_var[var]) + "'")
         else:
             if caseinfo[titledict["前置条件"]]:
-                for pre_case in caseinfo[titledict["前置条件"]].split():
+                for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                     pre_case = int(float(pre_case))
                     if pre_case in pre_case_list:
                         pass
@@ -133,7 +133,7 @@ def api_run(table, case_num, logr, logl):
             msg_loads = msg
         else:
             if caseinfo[titledict["前置条件"]]:
-                for pre_case in caseinfo[titledict["前置条件"]].split():
+                for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                     pre_case = int(float(pre_case))
                     if pre_case in pre_case_list:
                         pass
