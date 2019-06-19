@@ -75,49 +75,76 @@ def api_run(table, case_num, logr, logl):
     url = caseinfo[titledict["域名IP及端口"]] + caseinfo[titledict["URL_ADDR"]]
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
     try:
-        msg_json = json.loads(msg)
+        msg_loads = json.loads(msg)
     except:
-        msg_json = None
-    var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
-    key_list = []
-    value_list = []
-    if var_list:
-        for item in var_list:
-            value_list.append(item.split("${")[-1].strip('}"'))
-            key_list.append(item.split("${")[0].strip('"').strip().strip(':').strip('"'))
-        if caseinfo[titledict["前置条件"]]:       # 表格内多个前置条件用空格隔开
-            for pre_case in str(caseinfo[titledict["前置条件"]]).split():
-                pre_case = int(float(pre_case))
-                if pre_case in pre_case_list:
-                    pass
+        msg_loads = None
+    if msg_loads is not None:
+        var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
+        key_list = []
+        value_list = []
+        if var_list:
+            for item in var_list:
+                value_list.append(item.split("${")[-1].strip('}"'))
+                key_list.append(item.split("${")[0].strip('"').strip().strip(':').strip('"'))
+            if caseinfo[titledict["前置条件"]]:       # 表格内多个前置条件用空格隔开
+                for pre_case in str(caseinfo[titledict["前置条件"]]).split():
+                    pre_case = int(float(pre_case))
+                    if pre_case in pre_case_list:
+                        pass
+                    else:
+                        pre_case_list.append(pre_case)
+                        pre_recv = api_run(table, pre_case, logr, logl)
+                    for pre_condition in value_list:
+                        if pre_condition not in pre_var.keys():
+                            # pre_var[pre_condition] = Check(pre_condition, msg_loads)
+                            pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
+            for var in value_list:
+                var_key = key_list[value_list.index(var)]
+                if var == "timestamp":
+                    exec("msg_loads" + search_dict(var_key, msg_loads) + "=" + time.time())
                 else:
-                    pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case, logr, logl)
-                for pre_condition in var_list:
-                    if pre_condition not in pre_var.keys():
-                        # pre_var[pre_condition] = Check(pre_condition, msg_json)
-                        pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
-        for var in value_list:
-            print var_list, key_list, value_list
-            var_key = key_list[value_list.index(var)]
-            if var == "timestamp":
-                exec("msg_json" + search_dict(var_key, msg_json) + "=" + time.time())
-            else:
-                exec("msg_json" + search_dict(var_key, msg_json) + "='" + str(pre_var[var]) + "'")
+                    exec("msg_loads" + search_dict(var_key, msg_loads) + "='" + str(pre_var[var]) + "'")
+        else:
+            if caseinfo[titledict["前置条件"]]:
+                for pre_case in caseinfo[titledict["前置条件"]].split():
+                    pre_case = int(float(pre_case))
+                    if pre_case in pre_case_list:
+                        pass
+                    else:
+                        pre_case_list.append(pre_case)
+                        pre_recv = api_run(table, pre_case, logr, logl)
     else:
-        if caseinfo[titledict["前置条件"]]:
-            for pre_case in caseinfo[titledict["前置条件"]].split():
-                pre_case = int(float(pre_case))
-                if pre_case in pre_case_list:
-                    pass
-                else:
-                    pre_case_list.append(pre_case)
-                    pre_recv = json.load(table, pre_case, logr, logl)
+        var_list = re.findall(r'"\${(.*?)}"', msg)
+        if var_list:
+            if caseinfo[titledict["前置条件"]]:
+                for pre_case in str(caseinfo[titledict["前置条件"]]).split():
+                    pre_case = int(float(pre_case))
+                    if pre_case in pre_case_list:
+                        pass
+                    else:
+                        pre_case_list.append(pre_case)
+                        pre_recv = api_run(table, pre_case, logr, logl)
+                    for pre_condition in var_list:
+                        if pre_condition not in pre_var.keys():
+                            # pre_var[pre_condition] = Check(pre_condition, msg_loads)
+                            pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
+            for var in var_list:
+                msg.replace('"${'+var+'"', pre_var[var])
+            msg_loads = msg
+        else:
+            if caseinfo[titledict["前置条件"]]:
+                for pre_case in caseinfo[titledict["前置条件"]].split():
+                    pre_case = int(float(pre_case))
+                    if pre_case in pre_case_list:
+                        pass
+                    else:
+                        pre_case_list.append(pre_case)
+                        pre_recv = api_run(table, pre_case, logr, logl)
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
-        recv_msg, recv_headers = http_test.get_msg(url, msg_json)
+        recv_msg, recv_headers = http_test.get_msg(url, msg_loads)
     else:
-        recv_msg, recv_headers = http_test.post_msg(url, msg_json)
+        recv_msg, recv_headers = http_test.post_msg(url, msg_loads)
     pre_case_list.append(int(case_num))
     try:
         check_flag = check_result(recv_msg, caseinfo)
@@ -131,7 +158,7 @@ def api_run(table, case_num, logr, logl):
         print "用例        FAIL        %s        fail_result: %s" % (caseinfo[titledict["用例标题"]], str(check_flag))
         logr.log("用例        FAIL        %s  %s        fail_result: %s" % (table.name, caseinfo[titledict["用例标题"]], str(check_flag)))
         logl.debug("用例        FAIL        %s        fail_result: %s" % (caseinfo[titledict["用例标题"]], str(check_flag)))
-    print "check_failed: " + str(check_flag)
+    # print "check_failed: " + str(check_flag)
     if caseinfo[titledict["REMAIN_PARAM"]]:
         remain_param_list = caseinfo[titledict["REMAIN_PARAM"]].split("\n")
         for remain_param in remain_param_list:
