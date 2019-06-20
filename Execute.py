@@ -24,6 +24,10 @@ logl = None
 
 def exec_test(times=1):
     global pre_case_list, pre_recv, pre_var, titledict, logr, logl
+    #add by zx---begin
+    global my_token
+    my_token = None
+    # add by zx---end
     filename = glob.glob(sys.path[0] + os.sep + '*.xls*')[0]
     wb = xlrd.open_workbook(filename)
     for num in range(times):
@@ -72,6 +76,7 @@ def api_run(table, case_num):
     print "run case " + str(case_num)
     global pre_case_list, pre_recv, pre_var, logr, logl
     global titledict
+    global my_token
     if not titledict:
         titledict = get_title_index(table.row_values(0))
     caseinfo = table.row_values(case_num)
@@ -89,10 +94,22 @@ def api_run(table, case_num):
     else:
         msg = deal_var_nodict(str(msg), caseinfo, table)
     http_test = HTTP_API.HTTP_Cls(table.name)
+    # add by zx---begin
+    if my_token:
+        http_test.headers["authorization"] = my_token
+        print("header is set by token={}".format(http_test.headers))
+    # add by zx---end
     if caseinfo[titledict["请求方法"]].upper() == "GET":
         recv_msg = http_test.get_msg(url, msg)
     else:
         recv_msg = http_test.post_msg(url, msg)
+    #add by zx---begin
+    if "token" in recv_msg:
+        dict_tmp = eval(recv_msg)
+        if "data" in dict_tmp and "token" in dict_tmp["data"]:
+            my_token = dict_tmp["data"]["token"]
+            print("my_token set to:{}".format(my_token))
+    #add by zx---end
     pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
@@ -183,11 +200,14 @@ def deal_var_nodict(msg, caseinfo, table):
         if caseinfo[titledict["前置条件"]]:
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))
+                print("pre_case={}".format(pre_case))
+                print("pre_case_list={}".format(pre_case_list))
                 if pre_case in pre_case_list:
                     pass
                 else:
                     pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
+                    print("pre_recv={}".format(pre_recv))
     return msg
 
 
