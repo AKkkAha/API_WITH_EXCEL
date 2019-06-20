@@ -72,7 +72,6 @@ def api_run(table, case_num, logr, logl):
     global titledict
     if not titledict:
         titledict = get_title_index(table.row_values(0))
-    print titledict
     caseinfo = table.row_values(case_num)
     modelinfo = (caseinfo, titledict, table, pre_recv, logr, logl)
     url_addr = caseinfo[titledict["URL_ADDR"]]
