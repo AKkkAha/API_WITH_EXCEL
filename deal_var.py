@@ -62,7 +62,6 @@ def deal_var_nodict(msg, modelinfo):
         for var in var_list:
             msg.replace('"${' + var + '"', pre_var[var])
     else:
-        print titledict
         if caseinfo[titledict["前置条件"]]:
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
                 pre_case = int(float(pre_case))

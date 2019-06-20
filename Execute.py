@@ -10,7 +10,7 @@ import time
 from parse_dict import *
 import logger
 import sys
-from deal_var import *
+import deal_var
 from HTML import *
 reload(sys)
 sys.setdefaultencoding("utf-8")
@@ -38,8 +38,6 @@ def exec_test(times=1):
             logr.log("Case module : " + testsheet)
             logr.log("Test Round : Round " + str(num + 1))
             table = wb.sheet_by_name(testsheet)
-            title_list = table.row_values(0)
-            get_title_index(title_list)
             caselist = get_case(config.test_module[testsheet], table)
             for case_num in caselist:
                 api_run(table, int(case_num), logr, logl)
@@ -72,10 +70,13 @@ def get_case(sheet_list, table):
 def api_run(table, case_num, logr, logl):
     global pre_case_list, pre_recv, pre_var
     global titledict
+    if not titledict:
+        titledict = get_title_index(table.row_values(0))
+    print titledict
     caseinfo = table.row_values(case_num)
     modelinfo = (caseinfo, titledict, table, pre_recv, logr, logl)
     url_addr = caseinfo[titledict["URL_ADDR"]]
-    url_addr, pre_recv = deal_var_nodict(url_addr, modelinfo)
+    url_addr, pre_recv = deal_var.deal_var_nodict(url_addr, modelinfo)
     url = caseinfo[titledict["域名IP及端口"]] + url_addr
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
     try:
@@ -83,9 +84,9 @@ def api_run(table, case_num, logr, logl):
     except:
         msg_loads = None
     if msg_loads is not None:
-        msg_loads, pre_recv = deal_var_dict(msg, msg_loads, modelinfo)
+        msg_loads, pre_recv = deal_var.deal_var_dict(msg, msg_loads, modelinfo)
     else:
-        msg, pre_recv = deal_var_nodict(msg, modelinfo)
+        msg, pre_recv = deal_var.deal_var_nodict(msg, modelinfo)
         msg_loads = msg
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
