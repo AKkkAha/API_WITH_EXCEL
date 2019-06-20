@@ -16,7 +16,7 @@ class HTTP_Cls(object):
     # 登陆 data='username=admin&password=YWRtaW4%3D'
     def post_msg(self, url, post_data=None):
         self.r = requests.post(url=url, data=post_data, headers=self.headers)
-        print "------ post to %s ------: json_data = %s" % (url, json.dumps(post_data))
+        print "------ post to %s ------: data = %s" % (url, json.dumps(post_data))
         self.log.log("post to %s : json_data = %s" % (url, json.dumps(post_data)))
         if len(self.r.text) < 2000:
             print "-------- recv ---------: %s" % self.r.text
