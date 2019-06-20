@@ -22,7 +22,7 @@ titledict = {}
 
 def exec_test(times=1):
     global pre_case_list, pre_recv, pre_var, titledict
-    filename = glob.glob(os.getcwd() + os.sep + '*.xls*')[0]
+    filename = glob.glob(sys.path[0] + os.sep + '*.xls*')[0]
     wb = xlrd.open_workbook(filename)
     for num in range(times):
         for testsheet in config.test_module.keys():
@@ -130,7 +130,6 @@ def api_run(table, case_num, logr, logl):
                             pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
             for var in var_list:
                 msg.replace('"${'+var+'"', pre_var[var])
-            msg_loads = msg
         else:
             if caseinfo[titledict["前置条件"]]:
                 for pre_case in str(caseinfo[titledict["前置条件"]]).split():
@@ -140,6 +139,7 @@ def api_run(table, case_num, logr, logl):
                     else:
                         pre_case_list.append(pre_case)
                         pre_recv = api_run(table, pre_case, logr, logl)
+        msg_loads = msg
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
         recv_msg, recv_headers = http_test.get_msg(url, msg_loads)

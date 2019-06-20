@@ -10,12 +10,14 @@ class HTTP_Cls(object):
     def __init__(self, arg):
         self.log = logger.logcls(arg)
         self.r = None
-        self.headers = {'Content-Type': 'application/json'}
-
-    def post_msg(self, url, data=None):
-        self.r = requests.post(url=url, json=data, headers=self.headers)
-        print "------ post to %s ------: data = %s" % (url, json.dumps(data))
-        self.log.log("post to %s : data = %s" % (url, json.dumps(data)))
+        #  application/json;charset=UTF-8
+        #  application/x-www-form-urlencoded
+        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjUyNzA0Mn0.d01UswuNIVSkdExw3a1xFysYUwaG1izsj2-vZpe6oEn7nXUSVLWuZ0Msri7tC9VvKBPrIyFuYb9tdQUCmyucTSm5ToMAYvo9dvshj6Xu_CxR5W-9wXttPDjIPdgoeR03_7gKsApGO_A-VXWm9OrNMMJPFmWGXYqYUgtPGKJHjXg', 'fronttype': 'scp-admin-ui'}
+    # 登陆 data='username=admin&password=YWRtaW4%3D'
+    def post_msg(self, url, json_data=None):
+        self.r = requests.post(url=url, data=json_data, headers=self.headers)
+        print "------ post to %s ------: json_data = %s" % (url, json.dumps(json_data))
+        self.log.log("post to %s : json_data = %s" % (url, json.dumps(json_data)))
         print "-------- recv ---------: %s" % self.r.text
         print "-------- recv_headers --------: %s" % str(self.r.headers)
         self.log.log("recv : %s" % self.r.text)
@@ -26,6 +28,8 @@ class HTTP_Cls(object):
             return e, self.r.headers
 
     def get_msg(self, url, param=None):
+        self.r = requests.get(url=url, params=param, headers=self.headers)
+        print "get from %s ------: param = %s, headers = %s" % (url, json.dumps(param), self.headers)
         self.r = requests.get(url=url, params=param, headers=self.headers)
         print "get from %s ------: param = %s" % (url, json.dumps(param))
         self.log.log("get from %s : param = %s" % (url, json.dumps(param)))
