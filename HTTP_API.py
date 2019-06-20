@@ -14,10 +14,10 @@ class HTTP_Cls(object):
         #  application/x-www-form-urlencoded
         self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjUyNzA0Mn0.d01UswuNIVSkdExw3a1xFysYUwaG1izsj2-vZpe6oEn7nXUSVLWuZ0Msri7tC9VvKBPrIyFuYb9tdQUCmyucTSm5ToMAYvo9dvshj6Xu_CxR5W-9wXttPDjIPdgoeR03_7gKsApGO_A-VXWm9OrNMMJPFmWGXYqYUgtPGKJHjXg', 'fronttype': 'scp-admin-ui'}
     # 登陆 data='username=admin&password=YWRtaW4%3D'
-    def post_msg(self, url, json_data=None):
-        self.r = requests.post(url=url, data=json_data, headers=self.headers)
-        print "------ post to %s ------: json_data = %s" % (url, json.dumps(json_data))
-        self.log.log("post to %s : json_data = %s" % (url, json.dumps(json_data)))
+    def post_msg(self, url, post_data=None):
+        self.r = requests.post(url=url, data=post_data, headers=self.headers)
+        print "------ post to %s ------: json_data = %s" % (url, json.dumps(post_data))
+        self.log.log("post to %s : json_data = %s" % (url, json.dumps(post_data)))
         print "-------- recv ---------: %s" % self.r.text
         print "-------- recv_headers --------: %s" % str(self.r.headers)
         self.log.log("recv : %s" % self.r.text)
