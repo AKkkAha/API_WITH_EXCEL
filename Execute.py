@@ -18,10 +18,12 @@ pre_case_list = []
 pre_recv = None
 pre_var = config.custom_var
 titledict = {}
+logr = None
+logl = None
 
 
 def exec_test(times=1):
-    global pre_case_list, pre_recv, pre_var, titledict
+    global pre_case_list, pre_recv, pre_var, titledict, logr, logl
     filename = glob.glob(sys.path[0] + os.sep + '*.xls*')[0]
     wb = xlrd.open_workbook(filename)
     for num in range(times):
@@ -39,7 +41,7 @@ def exec_test(times=1):
             table = wb.sheet_by_name(testsheet)
             caselist = get_case(config.test_module[testsheet], table)
             for case_num in caselist:
-                api_run(table, int(case_num), logr, logl)
+                api_run(table, int(case_num))
             logl.log("Round " + str(num + 1) + " finished")
             logr.log("Round " + str(num + 1) + " finished")
 
@@ -66,16 +68,15 @@ def get_case(sheet_list, table):
     return case_list
 
 
-def api_run(table, case_num, logr, logl):
+def api_run(table, case_num):
     print "run case " + str(case_num)
-    global pre_case_list, pre_recv, pre_var
+    global pre_case_list, pre_recv, pre_var, logr, logl
     global titledict
     if not titledict:
         titledict = get_title_index(table.row_values(0))
     caseinfo = table.row_values(case_num)
-    modelinfo = (caseinfo, titledict, table, pre_recv, logr, logl)
     url_addr = caseinfo[titledict["URL_ADDR"]]
-    url_addr, pre_recv = deal_var_nodict(url_addr, modelinfo)
+    url_addr = deal_var_nodict(url_addr, caseinfo, table)
     url = caseinfo[titledict["域名IP及端口"]] + url_addr
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
     try:
@@ -83,9 +84,9 @@ def api_run(table, case_num, logr, logl):
     except:
         msg_loads = None
     if type(msg_loads) is dict:
-        msg_loads, pre_recv = deal_var_dict(msg, msg_loads, modelinfo)
+        msg_loads = deal_var_dict(msg, msg_loads, caseinfo, table)
     else:
-        msg, pre_recv = deal_var_nodict(str(msg), modelinfo)
+        msg = deal_var_nodict(str(msg), caseinfo, table)
         msg_loads = msg
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
@@ -120,11 +121,11 @@ def api_run(table, case_num, logr, logl):
     return recv_msg
 
 
-def deal_var_dict(msg, msg_loads, modelinfo):
+def deal_var_dict(msg, msg_loads, caseinfo, table):
+    global pre_recv
     var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
     key_list = []
     value_list = []
-    caseinfo, titledict, table, pre_recv, logr, logl = modelinfo
     if var_list:
         for item in var_list:
             value_list.append(item.split("${")[-1].strip('}"'))
@@ -136,7 +137,7 @@ def deal_var_dict(msg, msg_loads, modelinfo):
                     pass
                 else:
                     pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case, logr, logl)
+                    pre_recv = api_run(table, pre_case)
                 for pre_condition in value_list:
                     if pre_condition not in pre_var.keys():
                         # pre_var[pre_condition] = Check(pre_condition, msg_loads)
@@ -155,12 +156,12 @@ def deal_var_dict(msg, msg_loads, modelinfo):
                     pass
                 else:
                     pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case, logr, logl)
-    return msg_loads, pre_recv
+                    pre_recv = api_run(table, pre_case)
+    return msg_loads
 
 
-def deal_var_nodict(msg, modelinfo):
-    caseinfo, titledict, table, pre_recv, logr, logl = modelinfo
+def deal_var_nodict(msg, caseinfo, table):
+    global pre_recv
     var_list = re.findall(r'"\${(.*?)}"', msg)
     if var_list:
         if caseinfo[titledict["前置条件"]]:
@@ -170,7 +171,7 @@ def deal_var_nodict(msg, modelinfo):
                     pass
                 else:
                     pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case, logr, logl)
+                    pre_recv = api_run(table, pre_case)
                 for pre_condition in var_list:
                     if pre_condition not in pre_var.keys():
                         # pre_var[pre_condition] = Check(pre_condition, msg_loads)
@@ -185,8 +186,8 @@ def deal_var_nodict(msg, modelinfo):
                     pass
                 else:
                     pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case, logr, logl)
-    return msg, pre_recv
+                    pre_recv = api_run(table, pre_case)
+    return msg
 
 
 def check_result(recv_msg, caseinfo):
