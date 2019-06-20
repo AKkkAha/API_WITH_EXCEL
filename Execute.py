@@ -90,14 +90,15 @@ def api_run(table, case_num):
         msg_loads = msg
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
-        recv_msg, recv_headers = http_test.get_msg(url, msg_loads)
+        recv_msg = http_test.get_msg(url, msg_loads)
     else:
-        recv_msg, recv_headers = http_test.post_msg(url, msg_loads)
+        recv_msg = http_test.post_msg(url, msg_loads)
     pre_case_list.append(int(case_num))
-    try:
-        check_flag = check_result(recv_msg, caseinfo)
-    except Exception as e:
-        check_flag = e
+    # try:
+    #     check_flag = check_result(recv_msg, caseinfo)
+    # except Exception as e:
+    #     check_flag = e
+    check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
         print "用例        PASS        %s" % caseinfo[titledict["用例标题"]]
         logr.log("用例        PASS        %s  %s" % (table.name, caseinfo[titledict["用例标题"]]))
@@ -191,15 +192,25 @@ def deal_var_nodict(msg, caseinfo, table):
 
 
 def check_result(recv_msg, caseinfo):
+    try:
+        recv_msg = json.loads(recv_msg)
+    except:
+        return recv_msg
     exp_code = caseinfo[titledict["EXPECTED_CODE"]]
-    get_code = find_from_dict("code", recv_msg)
-    if exp_code != get_code:
-        return "code = " + str(get_code)
+    if exp_code:
+        get_code = find_from_dict("code", recv_msg)
+        if exp_code != get_code:
+            return "code = " + str(get_code)
     if caseinfo[titledict["EXPECTED_RESULTS"]]:
-        result_dict = json.loads(caseinfo[titledict["EXPECTED_RESULTS"]])
-        miss_list = compare_dict(result_dict, recv_msg)
-        if miss_list:
-            return miss_list      # 返回缺少的值
+        try:
+            result_dict = json.loads(caseinfo[titledict["EXPECTED_RESULTS"]])
+            miss_list = compare_dict(result_dict, recv_msg)
+            if miss_list:
+                return miss_list      # 返回缺少的值
+        except ValueError:
+            result = str(caseinfo[titledict["EXPECTED_RESULTS"]])
+            if recv_msg != result:
+                return recv_msg
     return None
 
 

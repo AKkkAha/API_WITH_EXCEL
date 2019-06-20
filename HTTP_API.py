@@ -12,20 +12,22 @@ class HTTP_Cls(object):
         self.r = None
         #  application/json;charset=UTF-8
         #  application/x-www-form-urlencoded
-        self.headers = {'Content-Type': 'application/application/json;charset=UTF-8', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjUyNzA0Mn0.d01UswuNIVSkdExw3a1xFysYUwaG1izsj2-vZpe6oEn7nXUSVLWuZ0Msri7tC9VvKBPrIyFuYb9tdQUCmyucTSm5ToMAYvo9dvshj6Xu_CxR5W-9wXttPDjIPdgoeR03_7gKsApGO_A-VXWm9OrNMMJPFmWGXYqYUgtPGKJHjXg', 'fronttype': 'scp-admin-ui'}
+        self.headers = {'Content-Type': 'application/json;charset=UTF-8', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjU0NzcyMH0.JfFdZ8Dqy6YwUR8nXt6Ed_HGtoc7L99FO-PkvdGmMhHON9aVJdQ7mmb5X__neR7pkI7-hM1Mq5rAYuwXxp8gDXQzOSxnbUI4kgMKoJ6olz_IROUwyVK09tO00r6lifkhKQBlTfciBIYA2Kz-qI-y1IxplOwMmcvDnNyj3f-HaY4', 'fronttype': 'scp-admin-ui'}
     # 登陆 data='username=admin&password=YWRtaW4%3D'
     def post_msg(self, url, post_data=None):
         self.r = requests.post(url=url, data=post_data, headers=self.headers)
         print "------ post to %s ------: json_data = %s" % (url, json.dumps(post_data))
         self.log.log("post to %s : json_data = %s" % (url, json.dumps(post_data)))
-        print "-------- recv ---------: %s" % self.r.text
-        print "-------- recv_headers --------: %s" % str(self.r.headers)
+        if len(self.r.text) < 2000:
+            print "-------- recv ---------: %s" % self.r.text
+        else:
+            print "-------- recv ---------: %s" % "get messege successfully but it's too long to show you !"
         self.log.log("recv : %s" % self.r.text)
-        self.log.log("recv_headers : %s: " % str(self.r.headers))
-        try:
-            return self.r.json(), self.r.headers
-        except Exception as e:
-            return e, self.r.headers
+        # try:
+        #     return self.r.json(), self.r.headers
+        # except Exception as e:
+        #     return e, self.r.headers
+        return self.r.text
 
     def get_msg(self, url, param=None):
         self.r = requests.get(url=url, params=param, headers=self.headers)
@@ -33,14 +35,16 @@ class HTTP_Cls(object):
         self.r = requests.get(url=url, params=param, headers=self.headers)
         print "get from %s ------: param = %s" % (url, json.dumps(param))
         self.log.log("get from %s : param = %s" % (url, json.dumps(param)))
-        print "-------- recv ---------: %s" % self.r.text
-        print "-------- recv_headers --------: %s" % str(self.r.headers)
+        if len(self.r.text) < 2000:
+            print "-------- recv ---------: %s" % self.r.text
+        else:
+            print "-------- recv ---------: %s" % "get messege successfully but it's too long to show you !"
         self.log.log("recv : %s" % self.r.text)
-        self.log.log("recv_headers : %s: " % str(self.r.headers))
-        try:
-            return self.r.json(), self.r.headers
-        except Exception as e:
-            if e is ValueError:
-                return {"code": 200}, self.r.headers
-            else:
-                return e, self.r.headers
+        return self.r.text
+        # try:
+        #     return self.r.json(), self.r.headers
+        # except Exception as e:
+        #     if e is ValueError:
+        #         return {"code": 200}, self.r.headers
+        #     else:
+        #         return e, self.r.headers

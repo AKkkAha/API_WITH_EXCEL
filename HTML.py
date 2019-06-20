@@ -170,7 +170,7 @@ class Html:
                     elif "DEBUG" in line and postflag == 1:
                         conc = line.strip('\r\n').split("- DEBUG -")[-1]
                         result, casename = tuple(conc.split()[1:3])
-                        logdetail = postmsg + '<p>' + recvmsg + '<p>' + recv_headers + '<p>' + conc
+                        logdetail = postmsg + '<p>' + recvmsg + '<p>' + conc
                         entitylist = [round[-1], result, logdetail]
                         entitydict[casename + round[-1]] = entitylist
                         casedict[casemodule] = entitydict
