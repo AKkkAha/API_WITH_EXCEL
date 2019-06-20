@@ -85,14 +85,14 @@ def api_run(table, case_num):
         msg_loads = None
     if type(msg_loads) is dict:
         msg_loads = deal_var_dict(msg, msg_loads, caseinfo, table)
+        msg = json.dumps(msg_loads)
     else:
         msg = deal_var_nodict(str(msg), caseinfo, table)
-        msg_loads = msg
     http_test = HTTP_API.HTTP_Cls(table.name)
     if caseinfo[titledict["请求方法"]].upper() == "GET":
-        recv_msg = http_test.get_msg(url, msg_loads)
+        recv_msg = http_test.get_msg(url, msg)
     else:
-        recv_msg = http_test.post_msg(url, msg_loads)
+        recv_msg = http_test.post_msg(url, msg)
     pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
@@ -104,6 +104,11 @@ def api_run(table, case_num):
         logr.log("用例        FAIL        %s  %s        fail_result: %s" % (table.name, caseinfo[titledict["用例标题"]], str(check_flag)))
         logl.debug("用例        FAIL        %s        fail_result: %s" % (caseinfo[titledict["用例标题"]], str(check_flag)))
     # print "check_failed: " + str(check_flag)
+    try:
+        recv_msg = json.loads(recv_msg)
+        pre_recv =recv_msg
+    except:
+        pass
     if caseinfo[titledict["REMAIN_PARAM"]]:
         remain_param_list = caseinfo[titledict["REMAIN_PARAM"]].split("\n")
         for remain_param in remain_param_list:
@@ -114,11 +119,6 @@ def api_run(table, case_num):
     print pre_var
     print "pre_case_list"
     print pre_case_list
-    try:
-        recv_msg = json.loads(recv_msg)
-        pre_recv =recv_msg
-    except:
-        pass
     return recv_msg
 
 

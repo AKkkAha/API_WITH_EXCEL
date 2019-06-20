@@ -12,7 +12,7 @@ class HTTP_Cls(object):
         self.r = None
         #  application/json;charset=UTF-8
         #  application/x-www-form-urlencoded
-        self.headers = {'Content-Type': 'application/json;charset=UTF-8', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjU0NzcyMH0.JfFdZ8Dqy6YwUR8nXt6Ed_HGtoc7L99FO-PkvdGmMhHON9aVJdQ7mmb5X__neR7pkI7-hM1Mq5rAYuwXxp8gDXQzOSxnbUI4kgMKoJ6olz_IROUwyVK09tO00r6lifkhKQBlTfciBIYA2Kz-qI-y1IxplOwMmcvDnNyj3f-HaY4', 'fronttype': 'scp-admin-ui'}
+        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjU0NzcyMH0.JfFdZ8Dqy6YwUR8nXt6Ed_HGtoc7L99FO-PkvdGmMhHON9aVJdQ7mmb5X__neR7pkI7-hM1Mq5rAYuwXxp8gDXQzOSxnbUI4kgMKoJ6olz_IROUwyVK09tO00r6lifkhKQBlTfciBIYA2Kz-qI-y1IxplOwMmcvDnNyj3f-HaY4', 'fronttype': 'scp-admin-ui'}
     # 登陆 data='username=admin&password=YWRtaW4%3D'
     def post_msg(self, url, post_data=None):
         self.r = requests.post(url=url, data=post_data, headers=self.headers)
