@@ -98,8 +98,11 @@ def api_run(table, case_num):
     if my_token:
         http_test.headers["authorization"] = my_token
         print("header is set by token={}".format(http_test.headers))
-    if case_num in (4,5):
+    if case_num in (4,5,6,17,18,19):
         http_test.headers["Content-Type"] = "application/json;charset=UTF-8"
+        print("header is set by case {0}={1}".format(case_num, http_test.headers))
+    if case_num in (17,18):
+        http_test.headers["Accept"] = "application/json"
         print("header is set by case {0}={1}".format(case_num, http_test.headers))
     # add by zx---end
     if caseinfo[titledict["请求方法"]].upper() == "GET":
@@ -113,7 +116,8 @@ def api_run(table, case_num):
             my_token = dict_tmp["data"]["token"]
             print("my_token set to:{}".format(my_token))
     #add by zx---end
-    pre_case_list.append(int(case_num))
+    if int(case_num) not in pre_case_list:
+        pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
         print "用例        PASS        %s" % caseinfo[titledict["用例标题"]]
@@ -183,7 +187,7 @@ def deal_var_dict(msg, msg_loads, caseinfo, table):
 
 def deal_var_nodict(msg, caseinfo, table):
     global pre_recv
-    var_list = re.findall(r'"\${(.*?)}"', msg)
+    var_list = re.findall(r'\${(.*?)}', msg)
     if var_list:
         if caseinfo[titledict["前置条件"]]:
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
