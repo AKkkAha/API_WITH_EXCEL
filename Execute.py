@@ -180,7 +180,7 @@ def deal_var_dict(msg, msg_loads, caseinfo, table):
 
 def deal_var_nodict(msg, caseinfo, table):
     global pre_recv
-    var_list = re.findall(r'"\${(.*?)}"', msg)
+    var_list = re.findall(r'\${(.*?)}', msg)
     if var_list:
         if caseinfo[titledict["前置条件"]]:
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
