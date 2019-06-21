@@ -127,7 +127,7 @@ def api_run(table, case_num):
     except:
         pass
     if caseinfo[titledict["REMAIN_PARAM"]]:
-        remain_param_list = caseinfo[titledict["REMAIN_PARAM"]].split("\n")
+        remain_param_list = caseinfo[titledict["REMAIN_PARAM"]].split()
         for remain_param in remain_param_list:
             remain_param = remain_param.strip()
             remain_value = find_from_dict(remain_param, recv_msg)
