@@ -98,6 +98,9 @@ def api_run(table, case_num):
     if my_token:
         http_test.headers["authorization"] = my_token
         print("header is set by token={}".format(http_test.headers))
+    if case_num in (4,5):
+        http_test.headers["Content-Type"] = "application/json;charset=UTF-8"
+        print("header is set by case {0}={1}".format(case_num, http_test.headers))
     # add by zx---end
     if caseinfo[titledict["请求方法"]].upper() == "GET":
         recv_msg = http_test.get_msg(url, msg)
