@@ -150,7 +150,7 @@ class Html:
             caseflag, postflag, recvflag = 0, 0, 0
             entitydict = None
             symbol = os.sep
-            self.record_path = os.path.join(os.getcwd(), "log") + symbol
+            self.record_path = os.path.join(sys.path[0], "log") + symbol
             casemodule = logfile.split(symbol)[-2]
             with open(logfile) as lf:
                 for line in lf:
@@ -165,8 +165,6 @@ class Html:
                         postflag = 1
                     elif "recv :" in line:
                         recvmsg = line.strip('\r\n').split('- INFO -')[-1]
-                    elif "recv_headers :" in line:
-                        recv_headers = line.strip('\r\n').split('- INFO -')[-1]
                     elif "DEBUG" in line and postflag == 1:
                         conc = line.strip('\r\n').split("- DEBUG -")[-1]
                         result, casename = tuple(conc.split()[1:3])
@@ -217,7 +215,7 @@ def make_html():
     obj = Html("result")
     loglist = []
     for module in config.test_module:
-        logfile = obj.find_new_file(os.path.join(os.getcwd(), "log", module))
+        logfile = obj.find_new_file(os.path.join(sys.path[0], "log", module))
         loglist.append(logfile)
     obj.parse_logfile(loglist)
 

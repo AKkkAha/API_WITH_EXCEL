@@ -214,7 +214,7 @@ def check_result(recv_msg, caseinfo):
             try:
                 json.loads(caseinfo[titledict["EXPECTED_RESULTS"]])
                 return recv_msg
-            except ValueError:
+            except:
                 result = str(caseinfo[titledict["EXPECTED_RESULTS"]])
                 if recv_msg != result:
                     return recv_msg
