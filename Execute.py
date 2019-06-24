@@ -144,43 +144,43 @@ def api_run(table, case_num):
     return recv_msg
 
 
-def deal_var_dict(msg, msg_loads, caseinfo, table):
-    global pre_recv
-    var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
-    key_list = []
-    value_list = []
-    if var_list:
-        for item in var_list:
-            value_list.append(item.split("${")[-1].strip('}"'))
-            key_list.append(item.split("${")[0].strip('"').strip().strip(':').strip('"'))
-        if caseinfo[titledict["前置条件"]]:  # 表格内多个前置条件用空格隔开
-            for pre_case in str(caseinfo[titledict["前置条件"]]).split():
-                pre_case = int(float(pre_case))
-                if pre_case in pre_case_list:
-                    pass
-                else:
-                    pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case)
-                for pre_condition in value_list:
-                    if pre_condition not in pre_var.keys():
-                        # pre_var[pre_condition] = Check(pre_condition, msg_loads)
-                        pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
-        for var in value_list:
-            var_key = key_list[value_list.index(var)]
-            if var == "timestamp":
-                exec ("msg_loads" + search_dict(var_key, msg_loads) + "=" + time.time())
-            else:
-                exec ("msg_loads" + search_dict(var_key, msg_loads) + "='" + str(pre_var[var]) + "'")
-    else:
-        if caseinfo[titledict["前置条件"]]:
-            for pre_case in str(caseinfo[titledict["前置条件"]]).split():
-                pre_case = int(float(pre_case))
-                if pre_case in pre_case_list:
-                    pass
-                else:
-                    pre_case_list.append(pre_case)
-                    pre_recv = api_run(table, pre_case)
-    return msg_loads
+# def deal_var_dict(msg, msg_loads, caseinfo, table):
+#     global pre_recv
+#     var_list = re.findall(r'".*?":\s+?"\${.*?}"', msg)
+#     key_list = []
+#     value_list = []
+#     if var_list:
+#         for item in var_list:
+#             value_list.append(item.split("${")[-1].strip('}"'))
+#             key_list.append(item.split("${")[0].strip('"').strip().strip(':').strip('"'))
+#         if caseinfo[titledict["前置条件"]]:  # 表格内多个前置条件用空格隔开
+#             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
+#                 pre_case = int(float(pre_case))
+#                 if pre_case in pre_case_list:
+#                     pass
+#                 else:
+#                     pre_case_list.append(pre_case)
+#                     pre_recv = api_run(table, pre_case)
+#                 for pre_condition in value_list:
+#                     if pre_condition not in pre_var.keys():
+#                         # pre_var[pre_condition] = Check(pre_condition, msg_loads)
+#                         pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
+#         for var in value_list:
+#             var_key = key_list[value_list.index(var)]
+#             if var == "timestamp":
+#                 exec ("msg_loads" + search_dict(var_key, msg_loads) + "=" + time.time())
+#             else:
+#                 exec ("msg_loads" + search_dict(var_key, msg_loads) + "='" + str(pre_var[var]) + "'")
+#     else:
+#         if caseinfo[titledict["前置条件"]]:
+#             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
+#                 pre_case = int(float(pre_case))
+#                 if pre_case in pre_case_list:
+#                     pass
+#                 else:
+#                     pre_case_list.append(pre_case)
+#                     pre_recv = api_run(table, pre_case)
+#     return msg_loads
 
 
 def deal_var(msg, caseinfo, table):
