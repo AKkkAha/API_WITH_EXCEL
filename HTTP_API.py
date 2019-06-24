@@ -12,10 +12,10 @@ class HTTP_Cls(object):
         self.r = None
         #  application/json;charset=UTF-8
         #  application/x-www-form-urlencoded
-        self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5MjU0NzcyMH0.JfFdZ8Dqy6YwUR8nXt6Ed_HGtoc7L99FO-PkvdGmMhHON9aVJdQ7mmb5X__neR7pkI7-hM1Mq5rAYuwXxp8gDXQzOSxnbUI4kgMKoJ6olz_IROUwyVK09tO00r6lifkhKQBlTfciBIYA2Kz-qI-y1IxplOwMmcvDnNyj3f-HaY4', 'fronttype': 'scp-admin-ui'}
+        # self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5Mjg3NzI5NX0.NaFI2zH5ESVdvGJgrNzE63qCWxeWY3ZGnVQJmf7alZjpvPhnITrRFNTv4E6riWLhcWQwHwf_v_p891b1OqM9BcXf3KTkVemDRGPjVxC8zxjiyRc6fEV1ZJ2_aVuHVd2bEzU3wBAiNkLUaEu-DmLsIfPczBPrGJiQ1tT504IgIkA', 'fronttype': 'scp-admin-ui'}
     # 登陆 data='username=admin&password=YWRtaW4%3D'
-    def post_msg(self, url, post_data=None):
-        self.r = requests.post(url=url, data=post_data, headers=self.headers)
+    def post_msg(self, url, post_data=None, headers=None):
+        self.r = requests.post(url=url, data=post_data, headers=headers)
         print "------ post to %s ------: data = %s" % (url, json.dumps(post_data))
         self.log.log("post to %s : json_data = %s" % (url, json.dumps(post_data)))
         if len(self.r.text) < 2000:
@@ -29,11 +29,11 @@ class HTTP_Cls(object):
         #     return e, self.r.headers
         return self.r.text
 
-    def get_msg(self, url, param=None):
-        self.r = requests.get(url=url, params=param, headers=self.headers)
-        print "get from %s ------: param = %s, headers = %s" % (url, json.dumps(param), self.headers)
-        self.r = requests.get(url=url, params=param, headers=self.headers)
-        print "get from %s ------: param = %s" % (url, json.dumps(param))
+    def get_msg(self, url, param=None, headers=None):
+        self.r = requests.get(url=url, params=param, headers=headers)
+        print "get from %s ------: param = %s, headers = %s" % (url, json.dumps(param), headers)
+        # self.r = requests.get(url=url, params=param, headers=headers)
+        # print "get from %s ------: param = %s" % (url, json.dumps(param))
         self.log.log("get from %s : param = %s" % (url, json.dumps(param)))
         if len(self.r.text) < 2000:
             print "-------- recv ---------: %s" % self.r.text

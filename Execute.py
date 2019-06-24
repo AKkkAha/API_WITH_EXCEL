@@ -25,8 +25,8 @@ logl = None
 def exec_test(times=1):
     global pre_case_list, pre_recv, pre_var, titledict, logr, logl
     #add by zx---begin
-    global my_token
-    my_token = None
+    # global my_token
+    # my_token = None
     # add by zx---end
     filename = glob.glob(sys.path[0] + os.sep + '*.xls*')[0]
     wb = xlrd.open_workbook(filename)
@@ -81,7 +81,7 @@ def api_run(table, case_num):
         titledict = get_title_index(table.row_values(0))
     caseinfo = table.row_values(case_num)
     url_addr = caseinfo[titledict["URL_ADDR"]]
-    url_addr = deal_var_nodict(url_addr, caseinfo, table)
+    url_addr = deal_var(url_addr, caseinfo, table)
     url = caseinfo[titledict["域名IP及端口"]] + url_addr
     msg = caseinfo[titledict["REQUEST_MESSAGE"]]
     try:
@@ -89,29 +89,31 @@ def api_run(table, case_num):
     except:
         msg_loads = None
     if type(msg_loads) is dict:
-        msg_loads = deal_var_dict(msg, msg_loads, caseinfo, table)
+        msg_loads = deal_var(msg, caseinfo, table)
         msg = json.dumps(msg_loads)
     else:
-        msg = deal_var_nodict(str(msg), caseinfo, table)
+        msg = deal_var(str(msg), caseinfo, table)
     http_test = HTTP_API.HTTP_Cls(table.name)
     # add by zx---begin
-    if my_token:
-        http_test.headers["authorization"] = my_token
-        print("header is set by token={}".format(http_test.headers))
-    if case_num in (4,5):
-        http_test.headers["Content-Type"] = "application/json;charset=UTF-8"
-        print("header is set by case {0}={1}".format(case_num, http_test.headers))
+    # if my_token:
+    #     http_test.headers["authorization"] = my_token
+    #     print("header is set by token={}".format(http_test.headers))
+    # if case_num in (4,5):
+    #     http_test.headers["Content-Type"] = "application/json;charset=UTF-8"
+    #     print("header is set by case {0}={1}".format(case_num, http_test.headers))
     # add by zx---end
+    headers = caseinfo[titledict["HEADERS"]]
+    headers = json.loads(deal_var(headers, caseinfo, table))
     if caseinfo[titledict["请求方法"]].upper() == "GET":
-        recv_msg = http_test.get_msg(url, msg)
+        recv_msg = http_test.get_msg(url, msg, headers)
     else:
-        recv_msg = http_test.post_msg(url, msg)
+        recv_msg = http_test.post_msg(url, msg, headers)
     #add by zx---begin
-    if "token" in recv_msg:
-        dict_tmp = eval(recv_msg)
-        if "data" in dict_tmp and "token" in dict_tmp["data"]:
-            my_token = dict_tmp["data"]["token"]
-            print("my_token set to:{}".format(my_token))
+    # if "token" in recv_msg:
+    #     dict_tmp = eval(recv_msg)
+    #     if "data" in dict_tmp and "token" in dict_tmp["data"]:
+    #         my_token = dict_tmp["data"]["token"]
+    #         print("my_token set to:{}".format(my_token))
     #add by zx---end
     pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
@@ -181,7 +183,7 @@ def deal_var_dict(msg, msg_loads, caseinfo, table):
     return msg_loads
 
 
-def deal_var_nodict(msg, caseinfo, table):
+def deal_var(msg, caseinfo, table):
     global pre_recv
     var_list = re.findall(r'\${(.*?)}', msg)
     if var_list:
