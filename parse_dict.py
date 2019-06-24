@@ -12,18 +12,20 @@ def search_dict(target, temp_dict):  # 返回target在temp_dict中的索引
             if type(temp_dict[key]) is dict:
                 value = "['" + str(key) + "']" + search_dict(target, temp_dict[key])
     return value
-
-
+# 从输入的key = target, 获取temp_dict中对应值
 def find_from_dict(target, temp_dict):   # 返回target在temp_dict中的值
     value = ""
-    if target in temp_dict.keys():
-        value = temp_dict[target]
-    else:
-        for key in temp_dict.keys():
-            if type(temp_dict[key]) is list:
-                temp_dict[key] = temp_dict[key][0]
-            if type(temp_dict[key]) is dict:
-                value = find_from_dict(target, temp_dict[key])
+    try:
+        if target in temp_dict.keys():
+            value = temp_dict[target]
+        else:
+            for key in temp_dict.keys():
+                if type(temp_dict[key]) is list:
+                    temp_dict[key] = temp_dict[key][0]
+                if type(temp_dict[key]) is dict:
+                    value = find_from_dict(target, temp_dict[key])
+    except:
+        value = str(temp_dict)
     return value
 
 
@@ -31,7 +33,7 @@ def compare_dict(dict1, dict2):
     miss_list = []
     for key, value in dict1.items():
         if key in dict2.keys():
-            if type(dict2[key]) is list:
+            if type(dict2[key]) is list and dict2[key]:
                 dict2[key] = dict2[key][0]
             if type(dict2[key]) is dict:
                 if type(dict1[key]) is dict:
