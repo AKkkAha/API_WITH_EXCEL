@@ -98,7 +98,7 @@ def api_run(table, case_num):
     if my_token:
         http_test.headers["authorization"] = my_token
         print("header is set by token={}".format(http_test.headers))
-    if case_num in (4,5,6,17,18,19):
+    if case_num in (4,5,17,18,19):
         http_test.headers["Content-Type"] = "application/json;charset=UTF-8"
         print("header is set by case {0}={1}".format(case_num, http_test.headers))
     if case_num in (17,18):
@@ -161,7 +161,7 @@ def deal_var_dict(msg, msg_loads, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
+                    #pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                 for pre_condition in value_list:
                     if pre_condition not in pre_var.keys():
@@ -180,7 +180,7 @@ def deal_var_dict(msg, msg_loads, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
+                    #pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
     return msg_loads
 
@@ -195,7 +195,7 @@ def deal_var_nodict(msg, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
+                    #pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                 for pre_condition in var_list:
                     if pre_condition not in pre_var.keys():
@@ -212,7 +212,7 @@ def deal_var_nodict(msg, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
+                    #pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                     print("pre_recv={}".format(pre_recv))
     return msg
