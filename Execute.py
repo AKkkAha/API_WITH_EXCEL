@@ -231,8 +231,8 @@ def check_result(recv_msg, caseinfo):
                 miss_list = compare_dict(result_dict, recv_msg)
                 if miss_list:
                     return miss_list  # 返回缺少的值
-            except ValueError:
-                result = str(caseinfo[titledict["EXPECTED_RESULTS"]])
+            except:
+                result = json.loads(caseinfo[titledict["EXPECTED_RESULTS"]])
                 if recv_msg != result:
                     return recv_msg
     except:
