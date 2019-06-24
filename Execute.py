@@ -71,6 +71,25 @@ def get_case(sheet_list, table):
         case_list = [i + 1 for i in range(table.nrows)]
     return case_list
 
+def make_headers_json(header_str):
+    """
+    :param header_str: 从chrome控制台直接复制出来的headers外面用单引号
+    :return: json_str
+    """
+    headers_li = header_str.split('\n')
+    header_ch = []
+
+    for each in headers_li:
+        each = each.replace(' ', '', 1)
+        each_li = each.split(':', 1)
+        each_li[0] = "\'" + each_li[0] + "\':"
+        each_li[1] = "\'" + each_li[1] + "\',\n"
+        each_str = ''.join(each_li)
+        header_ch.append(each_str)
+    all_str = ''.join(header_ch)
+    headers = json.dumps(eval('{' + all_str[:-3] + '}'))
+
+    return headers
 
 def api_run(table, case_num):
     print "run case " + str(case_num)
@@ -103,6 +122,7 @@ def api_run(table, case_num):
     #     print("header is set by case {0}={1}".format(case_num, http_test.headers))
     # add by zx---end
     headers = caseinfo[titledict["HEADERS"]]
+    headers = make_headers_json(headers.encode('utf-8'))
     headers = json.loads(deal_var(headers, caseinfo, table))
     if caseinfo[titledict["请求方法"]].upper() == "GET":
         recv_msg = http_test.get_msg(url, msg, headers)
