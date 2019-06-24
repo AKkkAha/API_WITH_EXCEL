@@ -157,7 +157,7 @@ def api_run(table, case_num):
         for remain_param in remain_param_list:
             remain_param = remain_param.strip()
             remain_value = find_from_dict(remain_param, recv_msg)
-            pre_var[remain_param] = remain_value
+            pre_var[remain_param+'_'+str(case_num)] = remain_value
     print "pre_var"
     print pre_var
     print "pre_case_list"
