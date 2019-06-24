@@ -115,7 +115,8 @@ def api_run(table, case_num):
     #         my_token = dict_tmp["data"]["token"]
     #         print("my_token set to:{}".format(my_token))
     #add by zx---end
-    pre_case_list.append(int(case_num))
+    if int(case_num) not in pre_case_list:
+        pre_case_list.append(int(case_num))
     check_flag = check_result(recv_msg, caseinfo)
     if check_flag is None:
         print "用例        PASS        %s" % caseinfo[titledict["用例标题"]]
