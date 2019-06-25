@@ -215,7 +215,6 @@ def deal_var(msg, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                 for pre_condition in var_list:
                     if pre_condition not in pre_var.keys():
@@ -232,7 +231,7 @@ def deal_var(msg, caseinfo, table):
                 if pre_case in pre_case_list:
                     pass
                 else:
-                    pre_case_list.append(pre_case)
+                    # pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                     print("pre_recv={}".format(pre_recv))
     return str(msg)

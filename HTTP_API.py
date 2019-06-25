@@ -14,6 +14,7 @@ class HTTP_Cls(object):
         #  application/x-www-form-urlencoded
         # self.headers = {'Content-Type': 'application/x-www-form-urlencoded', 'authorization': 'eyJhbGciOiJSUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTU5Mjg3NzI5NX0.NaFI2zH5ESVdvGJgrNzE63qCWxeWY3ZGnVQJmf7alZjpvPhnITrRFNTv4E6riWLhcWQwHwf_v_p891b1OqM9BcXf3KTkVemDRGPjVxC8zxjiyRc6fEV1ZJ2_aVuHVd2bEzU3wBAiNkLUaEu-DmLsIfPczBPrGJiQ1tT504IgIkA', 'fronttype': 'scp-admin-ui'}
     # 登陆 data='username=admin&password=YWRtaW4%3D'
+
     def post_msg(self, url, post_data="", headers=None):
         self.r = requests.post(url=url, data=post_data.encode("utf-8"), headers=headers)
         print "------ post to %s ------: data = %s, headers = %s" % (url, json.dumps(post_data), headers)
