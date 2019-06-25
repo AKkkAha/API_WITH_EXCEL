@@ -76,18 +76,20 @@ def make_headers_json(header_str):
     :param header_str: 从chrome控制台直接复制出来的headers外面用单引号
     :return: json_str
     """
-    headers_li = header_str.split('\n')
-    header_ch = []
-
-    for each in headers_li:
-        each = each.replace(' ', '', 1)
-        each_li = each.split(':', 1)
-        each_li[0] = "\'" + each_li[0] + "\':"
-        each_li[1] = "\'" + each_li[1] + "\',\n"
-        each_str = ''.join(each_li)
-        header_ch.append(each_str)
-    all_str = ''.join(header_ch)
-    headers = json.dumps(eval('{' + all_str[:-3] + '}'))
+    if header_str:
+        headers_li = header_str.split('\n')
+        header_ch = []
+        for each in headers_li:
+            each = each.replace(' ', '', 1)
+            each_li = each.split(':', 1)
+            each_li[0] = "\'" + each_li[0] + "\':"
+            each_li[1] = "\'" + each_li[1] + "\',\n"
+            each_str = ''.join(each_li)
+            header_ch.append(each_str)
+        all_str = ''.join(header_ch)
+        headers = json.dumps(eval('{' + all_str[:-3] + '}'))
+    else:
+        headers = '{"Content-Type": "application/x-www-form-urlencoded", "fronttype": "scp-admin-ui"}'
 
     return headers
 
@@ -108,7 +110,7 @@ def api_run(table, case_num):
     except:
         msg_loads = None
     if type(msg_loads) is dict:
-        msg = deal_var(msg, caseinfo, table)
+        msg = deal_var(str(msg), caseinfo, table)
     else:
         msg = deal_var(str(msg), caseinfo, table)
     http_test = HTTP_API.HTTP_Cls(table.name)
@@ -148,7 +150,7 @@ def api_run(table, case_num):
     # print "check_failed: " + str(check_flag)
     try:
         recv_msg = json.loads(recv_msg)
-        pre_recv =recv_msg
+        pre_recv = recv_msg
     except:
         pass
     if caseinfo[titledict["REMAIN_PARAM"]]:
@@ -220,7 +222,7 @@ def deal_var(msg, caseinfo, table):
                         # pre_var[pre_condition] = Check(pre_condition, msg_loads)
                         pre_var[pre_condition] = eval("pre_recv" + search_dict(pre_condition, pre_recv))
         for var in var_list:
-            msg = msg.replace('${' + str(var) + '}', pre_var[var])
+            msg = msg.replace('${' + str(var) + '}', str(pre_var[var]))
     else:
         if caseinfo[titledict["前置条件"]]:
             for pre_case in str(caseinfo[titledict["前置条件"]]).split():
