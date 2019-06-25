@@ -108,8 +108,7 @@ def api_run(table, case_num):
     except:
         msg_loads = None
     if type(msg_loads) is dict:
-        msg_loads = deal_var(msg, caseinfo, table)
-        msg = json.dumps(msg_loads)
+        msg = deal_var(msg, caseinfo, table)
     else:
         msg = deal_var(str(msg), caseinfo, table)
     http_test = HTTP_API.HTTP_Cls(table.name)
@@ -234,7 +233,7 @@ def deal_var(msg, caseinfo, table):
                     pre_case_list.append(pre_case)
                     pre_recv = api_run(table, pre_case)
                     print("pre_recv={}".format(pre_recv))
-    return msg
+    return str(msg)
 
 
 def check_result(recv_msg, caseinfo):
